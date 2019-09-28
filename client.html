@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+  <head>
+    <title>Gráfico del Stock sobre WebSocket</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://bit.ly/cdn-bootstrap-css">
+    <link rel="stylesheet" href="http://bit.ly/cdn-bootstrap-theme">
+    <script src="http://bit.ly/cdn-bootstrap-jq"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script> <!-- include socket.io client side script -->
+    <script>
+      var socket = io();
+      window.addEventListener("load", function(){
+        var boton = document.getElementById("botonaco");
+        boton.addEventListener("click", function(){
+          socket.emit('message', 'mensaje enviado desde el cliente');
+        });
+      });
+
+
+    </script>
+  </head>
+  <body lang="es">
+  </body>
+</html>
