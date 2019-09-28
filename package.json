@@ -1,0 +1,16 @@
+{
+  "name": "raspi_coche_webserver",
+  "version": "1.0.0",
+  "description": "servidor con socket.IO para controlar un coche",
+  "main": "webserver.js",
+  "dependencies": {
+    "onoff": "^4.1.3",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Juan Pablo Pérez",
+  "license": "MIT"
+}
