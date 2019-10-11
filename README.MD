@@ -57,4 +57,4 @@ sudo systemctl enable hostapd
 sudo systemctl start hostapd
 ```
 
-[text](https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md)
+Información extraida del siguiente [Enlace](https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md)
