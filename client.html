@@ -12,13 +12,11 @@
     <script>
       var socket = io();
       window.addEventListener("load", function(){
-        var boton = document.getElementById("botonaco");
-        boton.addEventListener("click", function(){
-          socket.emit('message', 'mensaje enviado desde el cliente');
+          var boton = document.getElementById("botonaco");
+          boton.addEventListener("click", function(){
+            socket.emit('message', 'mensaje enviado desde el cliente');
         });
-      });
-
-
+      });      
     </script>
   </head>
   <body lang="es">
