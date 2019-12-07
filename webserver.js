@@ -26,6 +26,7 @@ io.sockets.on('connection', function (socket) {// WebSocket Connection
     console.log('Usuario conectado');
     
     socket.send('Bienvenido');
+    socket.send('Hola');
     
     socket.on('pruebas', function(data){
 	console.log('pruebas');
@@ -36,9 +37,9 @@ io.sockets.on('connection', function (socket) {// WebSocket Connection
 	console.log(datos);
     });
     
-    socket.on('luces', function(data){
-	console.log("evento luces: "+data);
-	Raspiloto.cambia_estado_luces(data);
+    socket.on('luces', function(strOnOff){
+	console.log("evento luces: "+strOnOff);
+	Raspiloto.cambia_estado_luces(strOnOff);
     });
     
     socket.on('intermitentes', function(data){
