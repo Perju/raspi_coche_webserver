@@ -34,7 +34,13 @@ class HwConfigurador{
             pins[i].writeSync(0);
 	}
     }
-    
+    static setStatePins(pins, state){
+	for (var i = 0; i < pins.length; i++) {
+	    state == true
+		? pins[i].writeSync(1)
+		: pins[i].writeSync(0);
+	}
+    }
     // apagar y finalizar leds
     static shutdownPins(pins) {
 	for(var i=0;i<pins.length; i++){
