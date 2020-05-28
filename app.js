@@ -1,13 +1,20 @@
-var Raspiloto = new (require("./raspiloto").Raspiloto)();
-//var Raspiloto = new rpi.Raspiloto();
-var http = require("http").createServer(handler);
-var io = require("socket.io")(http);
-var fs = require("fs");
+var express = require("express");
+var path = require("path");
+var ejs = require("ejs");
 
-http.listen(8080, function () {
-  console.log("Escuchando en el puerto 8080");
+var Raspiloto = require("./raspiloto");
+
+// Express
+var app = express();
+
+app.set("port", process.env.PORT || 3000);
+
+app.set("view engine", "ejs");
+app.set("views", path.resolve(__dirname, "views"));
+
+app.get("/", (req, res) => {
+  res.render("client");
 });
-
 function handler(req, res) {
   fs.readFile(__dirname + "/client.html", function (err, data) {
     if (err) {
@@ -20,6 +27,13 @@ function handler(req, res) {
     }
   });
 }
+
+var server = app.listen(app.get("port"), function () {
+  console.log("Express server listening on port " + server.address().port);
+});
+
+// Socket.io
+var io = require("socket.io")(server);
 
 io.sockets.on("connection", function (socket) {
   // WebSocket Connection
