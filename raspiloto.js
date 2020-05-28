@@ -7,14 +7,14 @@ class Raspiloto {
       luces: "off",
       intermitentes: "off",
       emergencias: "off",
-      movimiento: "reposo"
+      movimiento: "reposo",
     };
     // pines para las luces y los intermitentes
     // TODO cambiar todos los numeros de los pines, no se pude congiurar un GND como salida.
     this.luces = HwConfigurador.preparePINs([22, 23, 24, 25], "out");
     this.intermitentesDer = HwConfigurador.preparePINs([26, 18], "out");
     this.intermitentesIzq = HwConfigurador.preparePINs([17, 27], "out");
-    this.blinkInterval = [setInterval(function() {}, 0)];
+    this.blinkInterval = [setInterval(function () {}, 0)];
     clearInterval(this.blinkInterval[0]);
     // motorA is Left or Izq
     this.motorIzq = HwConfigurador.preparePINs([5, 6], "out");
@@ -97,4 +97,4 @@ class Raspiloto {
   }
 }
 
-module.exports.Raspiloto = Raspiloto;
+module.exports = Raspiloto;
