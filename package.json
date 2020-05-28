@@ -10,7 +10,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "run": "node webserver.js"
+    "run": "node app.js"
   },
   "author": "Juan Pablo Pérez",
   "license": "MIT"
