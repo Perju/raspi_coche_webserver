@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+  <head>
+    <title>Gráfico del Stock sobre WebSocket</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <!-- include socket.io client side script -->
+    <script>
+     var socket = io();
+     window.addEventListener("load", function() {
+       var controller = document.getElementById("controller");
+       var botones = controller.querySelectorAll("button");
+
+       var handler = function(event) {
+         event.preventDefault();
+         socket.emit("pruebas", event.target.name);
+       }
+
+       botones.forEach((b)=>{
+         b.addEventListener("click", handler);
+       })
+     });
+    </script>
+  </head>
+  <body lang="es">
+    <div class="container p-3 my-3 bg-dark">
+
+      <div id="controller" class="text-white p-3 bg-secondary">
+        <h1>Control remoto</h1>
+        <div class="row">
+          <div class="col"><button name="int-izq" class="btn">Intermitentes Izquierda</button></div>
+          <div class="col"><button name="alante" class="btn">Mv.Alante</button></div>
+          <div class="col"><button name="int-der" class="btn">Intermitentes Derecha</button></div>
+        </div>
+        <div class="row">
+          <div class="col"><button name="rot-izq" class="btn">Rot.Izquierda</button></div>
+          <div class="col"><button name="stop" class="btn">Detener</button></div>
+          <div class="col"><button name="rot-der" class="btn">Rot.Derecha</button></div>
+        </div>
+        <div class="row">
+          <div class="col"><button name="luces" class="btn">Luces</button></div>
+          <div class="col"><button name="atras" class="btn">Mv.Atras</button></div>
+          <div class="col"><button name="emergencias" class="btn">Emergencias</button></div>
+        </div>
+      </div>
+
+      <div class="container bg-info p-3 my-3 text-black">
+        <% if (status) { %>
+          <h2>Estado</h2>
+          <ul class="list-group">
+            <li class="list-group-item text-black">Luces: <%= status.luces %></li>
+            <li class="list-group-item">Intermitentes: <%= status.intermitentes %></li>
+            <li class="list-group-item">Emergencias: <%= status.emergencias %></li>
+            <li class="list-group-item">Movimiento: <%= status.movimiento %></li>
+          </ul>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>
