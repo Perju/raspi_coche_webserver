@@ -36,10 +36,9 @@ io.sockets.on("connection", function (socket) {
   });
 
   socket.on("signal", (data) => {
-    console.log("Signal: ", data);
     var dataToSend = { type: data.type, state: data.state };
-    console.log(`Data to send ${dataToSend}`, dataToSend);
     socket.emit("signal", dataToSend);
+    //console.log(dataToSend);
 
     switch (data.type) {
       case "horn":
@@ -58,6 +57,7 @@ io.sockets.on("connection", function (socket) {
         raspiloto.cambia_estado_emergencias(data.state);
         break;
     }
+    raspiloto.vehicle.updateSignals();
   });
 
   socket.on("pruebas", function (data) {
@@ -66,6 +66,6 @@ io.sockets.on("connection", function (socket) {
 
   socket.on("disconnect", function (data) {
     console.log("conexion cerrada");
-    raspiloto.desactivar_sistemas();
+    raspiloto.detener_sistemas();
   });
 });

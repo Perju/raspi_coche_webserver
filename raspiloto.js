@@ -9,13 +9,12 @@ class Raspiloto {
   }
 
   cambia_estado_intermitentes(side, state) {
-    console.log("cambia estado intermitentes: " + state);
     if (side == "right") {
       this.vehicle.statusSignals.rightSign = state;
-      this.vehicle.statusSignals.leftSign = !state;
+      this.vehicle.statusSignals.leftSign = false;
     } else if (side == "left") {
       this.vehicle.statusSignals.leftSign = state;
-      this.vehicle.statusSignals.rightSign = !state;
+      this.vehicle.statusSignals.rightSign = false;
     }
   }
 

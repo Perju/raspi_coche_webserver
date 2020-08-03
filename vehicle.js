@@ -9,13 +9,15 @@ class Vehicle {
       hazard: false,
       horn: false,
     };
+    this.oldLRLigths = { leftSign: false, rightSign: false, hazard: false };
     this.statusSteer = { left: 0, right: 0 };
     // pines para las luces y los intermitentes
     // TODO cambiar todos los numeros de los pines, no se pude congiurar un GND como salida.
     this.lights = hw.preparePINs([22, 23, 24, 25], "out");
     this.leftSigns = hw.preparePINs([26, 18], "out");
     this.rightSigns = hw.preparePINs([17, 27], "out");
-    this.blinkInterval = [setInterval(function () {}, 0)];
+    var intervalId = setInterval(function () {}, 0);
+    this.blinkInterval = [intervalId];
     clearInterval(this.blinkInterval[0]);
     // motorA is Left or Izq
     this.motorL = hw.preparePINs([5, 6], "out");
@@ -25,27 +27,30 @@ class Vehicle {
     this.horn = hw.preparePINs([4], "out");
   }
 
-  updateSignals(state) {
+  updateSignals() {
     // luces
-    hw.setStatePins(this.lights, this.state.light);
-    // intermitentes
-    if (this.state.hazard) {
-      hw.startBlink(
-        this.intermitentesDer.concat(this.intermitentesIzq),
-        this.blinkInterval
-      );
-    } else if (this.state.rightSign) {
-      hw.stopBlink(this.intermitentesIzq, this.blinkInterval);
-      hw.startBlink(this.intermitentesDer, this.blinkInterval);
-    } else if (this.state.leftSign) {
-      hw.stopBlink(this.intermitentesDer, this.blinkInterval);
-      hw.startBlink(this.intermitentesIzq, this.blinkInterval);
-    } else if (!this.state.leftSign && !this.state.rightSign) {
-      hw.stopBlink(this.intermitentesDer, this.blinkInterval);
-      hw.stopBlink(this.intermitentesIzq, this.blinkInterval);
+    hw.setStatePins(this.lights, this.statusSignals.light);
+    // intermitentes newstate -> nst y oldState -> ost
+    var st = this.statusSignals;
+    var left = this.leftSigns;
+    var right = this.rightSigns;
+    if (st.hazard) {
+      hw.stopBlink(right.concat(left), this.blinkInterval);
+      hw.startBlink(right.concat(left), this.blinkInterval);
+    }
+    if (st.rightSign && !st.hazard) {
+      hw.stopBlink(right.concat(left), this.blinkInterval);
+      hw.startBlink(right, this.blinkInterval);
+    }
+    if (st.leftSign && !st.hazard) {
+      hw.stopBlink(right.concat(left), this.blinkInterval);
+      hw.startBlink(left, this.blinkInterval);
+    }
+    if (!st.leftSign && !st.rightSign && !st.hazard) {
+      hw.stopBlink(right.concat(left), this.blinkInterval);
     }
     // claxon
-    hw.setStatePins(this.horn, this.state.horn);
+    hw.setStatePins(this.horn, this.statusSignals.horn);
   }
 
   updateSteer(state) {
