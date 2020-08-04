@@ -1,34 +1,38 @@
-var Gpio = require("onoff").Gpio;
+const raspi = require("raspi");
+const gpio = require("raspi-gpio");
 
 class HwConfigurador {
+  constructor() {
+    raspi.init(() => {
+      console.log("Motres iniciados: raspi.init");
+    });
+  }
   // preparar leds
-  preparePINs(pins, tipo) {
-    var pinsPreparados = [];
-    for (var i = 0; i < pins.length; i++) {
-      pinsPreparados.push(new Gpio(pins[i], tipo));
-    }
-    return pinsPreparados;
+  preparePINs(nPins, tipo) {
+    return nPins.map((n) => {
+      const pin = new gpio.DigitalOutput(`P1-${n}`);
+      pin.write(gpio.LOW);
+      return pin;
+    });
   }
 
   // parpadear leds
   toggleState(pins) {
-    for (var i = 0; i < pins.length; i++) {
-      var state = pins[i].readSync() != 0 ? 0 : 1;
-      pins[i].writeSync(state);
-    }
+    pins.forEach((pin) => {
+      pin.write(pin.value === gpio.LOW ? gpio.HIGH : gpio.LOW);
+    });
   }
 
   setStatePins(pins, state) {
-    for (var i = 0; i < pins.length; i++) {
-      state == true ? pins[i].writeSync(1) : pins[i].writeSync(0);
-    }
+    pins.forEach((pin) => {
+      pin.write(state === true ? gpio.HIGH : gpio.LOW);
+    });
   }
   // apagar y finalizar leds
   shutdownPins(pins) {
-    for (var i = 0; i < pins.length; i++) {
-      pins[i].writeSync(0);
-      pins[i].unexport();
-    }
+    pins.forEach((pin) => {
+      pin.write(gpio.LOW);
+    });
   }
 
   startBlink(LEDs, blinkInterval) {
@@ -40,9 +44,7 @@ class HwConfigurador {
 
   stopBlink(LEDs, blinkInterval) {
     clearInterval(blinkInterval[0]);
-    for (var i = 0; i < LEDs.length; i++) {
-      LEDs[i].writeSync(0);
-    }
+    this.shutdownPins(LEDs);
   }
 }
 
