@@ -1,5 +1,6 @@
 const raspi = require("raspi");
 const gpio = require("raspi-gpio");
+const pwm = require("raspi-pwm");
 
 class HwConfigurador {
   constructor() {
@@ -45,6 +46,16 @@ class HwConfigurador {
   stopBlink(LEDs, blinkInterval) {
     clearInterval(blinkInterval[0]);
     this.shutdownPins(LEDs);
+  }
+
+  preparePWM(nPin) {
+    const pin = new pwm.PWM(`P1-${nPin}`);
+    pin.write(0.0);
+    return pin;
+  }
+
+  setPWM(pin, duty) {
+    pin.write(duty);
   }
 }
 

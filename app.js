@@ -62,6 +62,8 @@ io.sockets.on("connection", function (socket) {
 
   socket.on("pruebas", function (data) {
     console.log("pruebas: ", data);
+    raspiloto.cambia_estado_movimiento(data);
+    raspiloto.vehicle.updateSteer();
   });
 
   socket.on("disconnect", function (data) {

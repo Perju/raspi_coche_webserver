@@ -22,7 +22,33 @@ class Raspiloto {
     this.vehicle.statusSignals.hazard = state;
   }
 
-  cambia_estado_movimiento(estado) {}
+  cambia_estado_movimiento(data) {
+    var stL = 0;
+    var stR = 0;
+    var fb = Math.cos(data.degree * (Math.PI / 180));
+    var lr = Math.sin(data.degree * (Math.PI / 180));
+    console.log("Palante:", fb, "Izquierda:", lr);
+
+    stL = fb;
+    stR = fb;
+    if (fb > 0) {
+      if (lr > 0) {
+        stR -= Math.abs(lr);
+      } else {
+        stL -= Math.abs(lr);
+      }
+    } else {
+      if (lr > 0) {
+        stR += Math.abs(lr);
+      } else {
+        stL += Math.abs(lr);
+      }
+    }
+    stL *= data.factor;
+    stR *= data.factor;
+    this.vehicle.statusSteer.left = stL;
+    this.vehicle.statusSteer.right = stR;
+  }
 
   cambia_estado_claxon(state) {
     this.vehicle.statusSignals.horn = state;
