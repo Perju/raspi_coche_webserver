@@ -11,20 +11,21 @@ class Vehicle {
     };
     this.oldLRLigths = { leftSign: false, rightSign: false, hazard: false };
     this.statusSteer = { left: 0, right: 0 };
-    // pines para las luces y los intermitentes
-    // TODO cambiar todos los numeros de los pines, no se pude congiurar un GND como salida.
-    this.lights = hw.preparePINs([22, 23, 24, 25], "out");
-    this.leftSigns = hw.preparePINs([26, 18], "out");
-    this.rightSigns = hw.preparePINs([17, 27], "out");
+    // intervalo para hacer parpadear los intermitentes
     var intervalId = setInterval(function () {}, 0);
     this.blinkInterval = [intervalId];
     clearInterval(this.blinkInterval[0]);
-    // motorA is Left or Izq
-    this.motorL = hw.preparePINs([5, 6], "out");
-    //motorB is Right of Der
-    this.motorR = hw.preparePINs([20, 21], "out");
-    //buzzer para el claxon
-    this.horn = hw.preparePINs([4], "out");
+    // sistema de pines para la nueva libreria
+    this.lights = hw.preparePINs([15, 16, 18, 22], "out");
+    this.leftSigns = hw.preparePINs([37, 12], "out");
+    this.rightSigns = hw.preparePINs([11, 13], "out");
+    this.horn = hw.preparePINs([7], "out");
+    // se necesita controlar la velocidad con un pwm
+    this.motorL = hw.preparePINs([29, 31], "out");
+    this.motorR = hw.preparePINs([38, 40], "out");
+    // hacen falta 12 o 32 como pwm0 y 33 o 35 como pwm1
+    this.motorLAcc = hw.preparePWM([32]);
+    this.motorRAcc = hw.preparePWM([33]);
   }
 
   updateSignals() {
@@ -53,7 +54,7 @@ class Vehicle {
     hw.setStatePins(this.horn, this.statusSignals.horn);
   }
 
-  updateSteer(state) {
+  updateSteer() {
     // hw.switchOffPins(this.motorIzq.concat(this.motorDer));
     // if (estado == "Palante") {
     //   hw.switchOnPins([this.motorIzq[0], this.motorDer[0]]);
@@ -66,6 +67,27 @@ class Vehicle {
     // } else if (estado == "Parar") {
     //   console.log("no hago nada porque ya esta todo parado");
     // }
+
+    // // se necesita controlar la velocidad con un pwm
+    // this.motorL = hw.preparePINs([29, 31], "out");
+    // this.motorR = hw.preparePINs([38, 40], "out");
+    // // hacen falta 12 o 32 como pwm0 y 33 o 35 como pwm1
+    // this.motorLAcc = hw.preparePWM([32]);
+    // this.motorRAcc = hw.preparePWM([33]);
+    var dirLeftMotor = this.statusSteer.left > 0 ? 0 : 1;
+    var dirRightMotor = this.statusSteer.left > 0 ? 0 : 1;
+    hw.setStatePins(this.motorL.concat(this.motorR), false);
+    hw.setStatePins([this.motorL[dirLeftMotor]], true);
+    hw.setStatePins([this.motorR[dirRightMotor]], true);
+    hw.setPWM(this.motorLAcc, Math.abs(this.statusSteer.left));
+    hw.setPWM(this.motorRAcc, Math.abs(this.statusSteer.right));
+    console.log(
+      "vehicle steer:",
+      dirLeftMotor,
+      dirRightMotor,
+      this.statusSteer.left,
+      this.statusSteer.right
+    );
   }
 }
 
