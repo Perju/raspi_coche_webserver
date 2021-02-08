@@ -17,14 +17,12 @@ app.get("/", (req, res) => {
   res.render("client", { status: raspiloto.status });
 });
 
-var server = app.listen(app.get("port"), function () {
-  console.log("Express server listening on port " + server.address().port);
-});
+var server = require("http").createServer(app);
 
 // Socket.io
 var io = require("socket.io")(server);
 
-io.sockets.on("connection", function (socket) {
+io.on("connection", function (socket) {
   // WebSocket Connection
   console.log("Usuario conectado");
 
@@ -70,4 +68,8 @@ io.sockets.on("connection", function (socket) {
     console.log("conexion cerrada");
     raspiloto.detener_sistemas();
   });
+});
+
+server.listen(app.get("port"), function () {
+  console.log("Express server listening on port " + server.address().port);
 });
