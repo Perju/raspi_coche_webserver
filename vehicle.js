@@ -11,6 +11,7 @@ class Vehicle {
     };
     this.oldLRLigths = { leftSign: false, rightSign: false, hazard: false };
     this.statusSteer = { left: 0, right: 0 };
+    this.direction = 0;
     // intervalo para hacer parpadear los intermitentes
     var intervalId = setInterval(function () {}, 0);
     this.blinkInterval = [intervalId];
@@ -55,39 +56,11 @@ class Vehicle {
   }
 
   updateSteer() {
-    // hw.switchOffPins(this.motorIzq.concat(this.motorDer));
-    // if (estado == "Palante") {
-    //   hw.switchOnPins([this.motorIzq[0], this.motorDer[0]]);
-    // } else if (estado == "Patras") {
-    //   hw.switchOnPins([this.motorIzq[1], this.motorDer[1]]);
-    // } else if (estado == "Derecha") {
-    //   hw.switchOnPins([this.motorIzq[0], this.motorDer[1]]);
-    // } else if (estado == "Izquierda") {
-    //   hw.switchOnPins([this.motorIzq[1], this.motorDer[0]]);
-    // } else if (estado == "Parar") {
-    //   console.log("no hago nada porque ya esta todo parado");
-    // }
-
-    // // se necesita controlar la velocidad con un pwm
-    // this.motorL = hw.preparePINs([29, 31], "out");
-    // this.motorR = hw.preparePINs([38, 40], "out");
-    // // hacen falta 12 o 32 como pwm0 y 33 o 35 como pwm1
-    // this.motorLAcc = hw.preparePWM([32]);
-    // this.motorRAcc = hw.preparePWM([33]);
-    var dirLeftMotor = this.statusSteer.left > 0 ? 0 : 1;
-    var dirRightMotor = this.statusSteer.left > 0 ? 0 : 1;
     hw.setStatePins(this.motorL.concat(this.motorR), false);
-    hw.setStatePins([this.motorL[dirLeftMotor]], true);
-    hw.setStatePins([this.motorR[dirRightMotor]], true);
+    hw.setStatePins([this.motorL[this.direction]], true);
+    hw.setStatePins([this.motorR[this.direction]], true);
     hw.setPWM(this.motorLAcc, Math.abs(this.statusSteer.left));
     hw.setPWM(this.motorRAcc, Math.abs(this.statusSteer.right));
-    console.log(
-      "vehicle steer:",
-      dirLeftMotor,
-      dirRightMotor,
-      this.statusSteer.left,
-      this.statusSteer.right
-    );
   }
 }
 
