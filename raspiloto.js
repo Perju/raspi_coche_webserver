@@ -42,7 +42,7 @@ class Raspiloto {
     rMotorPow *= data.factor;
     this.vehicle.statusSteer.left = lMotorPow;
     this.vehicle.statusSteer.right = rMotorPow;
-    this.vehicle.direction = cos > 0 ? 1 : 0;
+    this.vehicle.direction = cos > 0 ? 0 : 1;
   }
 
   cambia_estado_claxon(state) {

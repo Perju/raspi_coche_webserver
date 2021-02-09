@@ -29,14 +29,14 @@ io.on("connection", function (socket) {
   socket.send("Bienvenido");
 
   socket.on("steer", (data) => {
-    console.log(`Steer: ${data}`);
+    // console.log(`Steer: ${data}`);
     raspiloto.cambia_estado_movimiento(data);
   });
 
   socket.on("signal", (data) => {
     var dataToSend = { type: data.type, state: data.state };
     socket.emit("signal", dataToSend);
-    //console.log(dataToSend);
+    // console.log(dataToSend);
 
     switch (data.type) {
       case "horn":
@@ -58,8 +58,8 @@ io.on("connection", function (socket) {
     raspiloto.vehicle.updateSignals();
   });
 
-  socket.on("pruebas", function (data) {
-    console.log("pruebas: ", data);
+  socket.on("steer", function (data) {
+    // console.log("pruebas: ", data);
     raspiloto.cambia_estado_movimiento(data);
     raspiloto.vehicle.updateSteer();
   });
