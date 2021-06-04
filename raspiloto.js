@@ -23,26 +23,19 @@ class Raspiloto {
   }
 
   cambia_estado_movimiento(data) {
-    var lMotorPow = 0;
-    var rMotorPow = 0;
-
+    var motorPow = 0;
     var cos = Math.cos(data.degree * (Math.PI / 180));
-    var sin = Math.sin(data.degree * (Math.PI / 180));
+    motorPow = Math.abs(cos);
 
-    if (sin > 0) {
-      rMotorPow = 1 - Math.abs(sin);
-      lMotorPow = Math.abs(cos);
+    motorPow *= data.factor;
+    if(data.motor==="left"){
+      this.vehicle.statusSteer.left = motorPow;
+      this.vehicle.direction.left = cos > 0 ? 0 : 1;
     }
-    if (sin < 0) {
-      lMotorPow = 1 - Math.abs(sin);
-      rMotorPow = Math.abs(cos);
+    if(data.motor==="right"){
+      this.vehicle.statusSteer.right = motorPow;
+      this.vehicle.direction.right = cos > 0 ? 0 : 1;
     }
-
-    lMotorPow *= data.factor;
-    rMotorPow *= data.factor;
-    this.vehicle.statusSteer.left = lMotorPow;
-    this.vehicle.statusSteer.right = rMotorPow;
-    this.vehicle.direction = cos > 0 ? 0 : 1;
   }
 
   cambia_estado_claxon(state) {

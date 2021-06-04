@@ -11,7 +11,7 @@ class Vehicle {
     };
     this.oldLRLigths = { leftSign: false, rightSign: false, hazard: false };
     this.statusSteer = { left: 0, right: 0 };
-    this.direction = 0;
+    this.direction = { left: 0, right: 0 };
     // intervalo para hacer parpadear los intermitentes
     var intervalId = setInterval(function () {}, 0);
     this.blinkInterval = [intervalId];
@@ -57,8 +57,8 @@ class Vehicle {
 
   updateSteer() {
     hw.setStatePins(this.motorL.concat(this.motorR), false);
-    hw.setStatePins([this.motorL[this.direction]], true);
-    hw.setStatePins([this.motorR[this.direction]], true);
+    hw.setStatePins([this.motorL[this.direction.left]], true);
+    hw.setStatePins([this.motorR[this.direction.right]], true);
     hw.setPWM(this.motorLAcc, Math.abs(this.statusSteer.left));
     hw.setPWM(this.motorRAcc, Math.abs(this.statusSteer.right));
   }
