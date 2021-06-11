@@ -1,0 +1,81 @@
+* Servidor para controlar el vehículo teledirigido
+Servidor creado con nodejs, express y socket.io para controlar un vehículo desde
+un dispositivo remoto, haciendo uso de la aplicación para android.
+
+** Instalar hostapd para crear punto de acceso wifi
+Se utiliza =wlan0= como interfaz para los ejemplos, si se quiere usar otra
+interfaz esta tendrá que permitir montar un punto AP, para DHCP creo que no hay
+limitaciones.
+
+1. Instalar hostapd y detener el servicio para tener acceso a la configuración.
+   #+begin_src shell
+   sudo apt install hostapd
+   sudo systemctl stop hostapd
+   #+end_src
+
+2. Configurar una ip estática en nuestra interfaz wifi en el archivo
+   =/etc/dhcpcd.conf= y reiniciar la interfaz para cargar la nueva
+   configuración.
+   #+begin_src conf
+   interface wlan0
+   static ip_address=192.168.4.1/24
+   nohook wpa_supplicant
+   #+end_src
+
+3. Configurar el punto de acceso desde el fichero =/etc/hostapd/hostapd.conf=.
+   #+begin_src conf
+   interface=wlan0
+   driver=nl80211
+   ssid=NameOfNetwork
+   hw_mode=g
+   channel=7
+   wmm_enabled=0
+   macaddr_acl=0
+   auth_algs=1
+   ignore_broadcast_ssid=0
+   wpa=2
+   wpa_passphrase=AardvarkBadgerHedgehog
+   wpa_key_mgmt=WPA-PSK
+   wpa_pairwise=TKIP
+   rsn_pairwise=CCMP
+   #+end_src
+   
+   editamos el archivo del sistema =/etc/default/hostapd= que indica donde se
+   encuentra esta información y modificamos la linea #DAEMON_CONF
+   #+begin_src conf
+   DAEMON_CONF="/etc/hostapd/hostapd.conf"
+   #+end_src
+
+4. Y activamos hostapd
+   #+begin_src shell
+   sudo systemctl unmask hostapd
+   sudo systemctl enable hostapd
+   sudo systemctl start hostapd
+   #+end_src
+
+** Instalar y configurar servicio DHCP
+1. Instalar un paquete para crear un servicio DHCP
+   #+begin_src shell 
+   sudo apt install isc-dhcp-server
+   #+end_src
+2. Configurar la interfaz que se usara para dar direcciones ip en el fichero
+   #+begin_src conf
+   INTERFACESv4="wlan0"
+   #+end_src
+3. Configurar el pool con las direcciones a servir en el fichero
+   =/etc/default/isc-dhcp-server=.
+   #+begin_src conf
+   subnet 192.168.4.0 netmask 255.255.255.0 {
+     range 192.168.4.2 192.168.4.10;
+     default-lease-time 600;
+     max-lease-time 7200;
+   }
+   #+end_src
+4. Registrar el servicio en el =crontab= de =root=.
+   #+begin_src shell
+   sudo crontab -u root -e
+   #+end_src
+   Esperar un tiempo para la interfaz wifi tenga una dirección ip.
+   #+begin_src config
+   @reboot sleep 5 && service isc-dhcp-server start
+   #+end_src
