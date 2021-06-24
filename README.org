@@ -76,6 +76,13 @@ limitaciones.
    sudo crontab -u root -e
    #+end_src
    Esperar un tiempo para la interfaz wifi tenga una dirección ip.
-   #+begin_src config
+   #+begin_src conf
    @reboot sleep 5 && service isc-dhcp-server start
    #+end_src
+
+** Iniciar el servicio web
+Como con el servicio DHCP, este tambien se puede iniciar usando la =crontab= de
+=root=.
+#+begin_src conf
+@reboot sleep 5 && npm --prefix /home/pi/develop/raspi_coche_webserver/
+#+end_src
