@@ -84,5 +84,5 @@ limitaciones.
 Como con el servicio DHCP, este tambien se puede iniciar usando la =crontab= de
 =root=.
 #+begin_src conf
-@reboot sleep 5 && npm --prefix /home/pi/develop/raspi_coche_webserver/
+@reboot sleep 5 && npm --prefix /home/pi/develop/raspi_coche_webserver/ run start
 #+end_src
