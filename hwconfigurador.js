@@ -1,62 +1,62 @@
-var Gpio = require("onoff").Gpio;
+const raspi = require("raspi");
+const gpio = require("raspi-gpio");
+const pwm = require("raspi-pwm");
+
 class HwConfigurador {
+  constructor() {
+    raspi.init(() => {
+      console.log("Motres iniciados: raspi.init");
+    });
+  }
   // preparar leds
-  static preparePINs(pins, tipo) {
-    var pinsPreparados = [];
-    for (var i = 0; i < pins.length; i++) {
-      pinsPreparados.push(new Gpio(pins[i], tipo));
-    }
-    return pinsPreparados;
+  preparePINs(nPins, tipo) {
+    return nPins.map((n) => {
+      const pin = new gpio.DigitalOutput(`P1-${n}`);
+      pin.write(gpio.LOW);
+      return pin;
+    });
   }
 
   // parpadear leds
-  static blinkPins(pins) {
-    for (var i = 0; i < pins.length; i++) {
-      if (pins[i].readSync() != 0) {
-        pins[i].writeSync(0);
-      } else {
-        pins[i].writeSync(1);
-      }
-    }
+  toggleState(pins) {
+    pins.forEach((pin) => {
+      pin.write(pin.value === gpio.LOW ? gpio.HIGH : gpio.LOW);
+    });
   }
 
-  // encender leds
-  static switchOnPins(pins) {
-    for (var i = 0; i < pins.length; i++) {
-      pins[i].writeSync(1);
-    }
+  setStatePins(pins, state) {
+    pins.forEach((pin) => {
+      pin.write(state === true ? gpio.HIGH : gpio.LOW);
+    });
   }
-
-  // apagar leds
-  static switchOffPins(pins) {
-    for (var i = 0; i < pins.length; i++) {
-      pins[i].writeSync(0);
-    }
-  }
-
   // apagar y finalizar leds
-  static shutdownPins(pins) {
-    for (var i = 0; i < pins.length; i++) {
-      pins[i].writeSync(0);
-      pins[i].unexport();
-    }
+  shutdownPins(pins) {
+    pins.forEach((pin) => {
+      pin.write(gpio.LOW);
+    });
   }
 
-  static startBlink(LEDs, blinkInterval) {
-    //console.log("Empiza a parpadear -> blinkInterval ");
-    //console.log(LEDs);
+  startBlink(LEDs, blinkInterval) {
     if (blinkInterval[0]._idleTimeout == -1) {
-      blinkInterval[0] = setInterval(this.blinkPins, 500, LEDs);
+      clearInterval(blinkInterval[0]);
+      blinkInterval[0] = setInterval(this.toggleState, 500, LEDs);
     }
   }
 
-  static stopBlink(LEDs, blinkInterval) {
-    // console.log("Terminal de parpadear");
+  stopBlink(LEDs, blinkInterval) {
     clearInterval(blinkInterval[0]);
-    for (var i = 0; i < LEDs.length; i++) {
-      LEDs[i].writeSync(0);
-    }
+    this.shutdownPins(LEDs);
+  }
+
+  preparePWM(nPin) {
+    const pin = new pwm.PWM(`P1-${nPin}`);
+    pin.write(0.0);
+    return pin;
+  }
+
+  setPWM(pin, duty) {
+    pin.write(duty);
   }
 }
 
-module.exports.HwConfigurador = HwConfigurador;
+module.exports = HwConfigurador;

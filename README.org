@@ -2,28 +2,52 @@
 Servidor creado con nodejs, express y socket.io para controlar un vehículo desde
 un dispositivo remoto, haciendo uso de la aplicación para android.
 
-** Instalar hostapd para crear punto de acceso wifi
-Se utiliza =wlan0= como interfaz para los ejemplos, si se quiere usar otra
-interfaz esta tendrá que permitir montar un punto AP, para DHCP creo que no hay
-limitaciones.
+** Iniciar el servicio web
+Como con el servicio DHCP, este tambien se puede iniciar usando la =crontab= de
+=root=.
+#+begin_src conf
+@reboot sleep 5 && npm --prefix /home/pi/develop/raspi_coche_webserver/ run start
+#+end_src
+* Servidor Control RC-Car
+Servidor creado con nodejs y socket.io que acepta conexiones remotas para
+manejar un coche teledirigido creado con Raspberry pi.
 
-1. Instalar hostapd y detener el servicio para tener acceso a la configuración.
+Para poder utilizar el coche desde cualquier dispositivo es recomendable
+disponer de una interfaz WiFi que se pueda usar como punto de acceso, y seguir
+los siguientes pasos.
+
+1. Instalar dnsmasq y hostapd
    #+begin_src shell
-   sudo apt install hostapd
+   sudo apt install dnsmasq hostapd
+   # Hay que detener los servicios
+   sudo systemctl stop dnsmasq
    sudo systemctl stop hostapd
    #+end_src
 
-2. Configurar una ip estática en nuestra interfaz wifi en el archivo
-   =/etc/dhcpcd.conf= y reiniciar la interfaz para cargar la nueva
-   configuración.
-   #+begin_src conf
+2. Configurar una ip estática ~sudo nano /etc/dhcpcd.conf~ al final de este
+   archivo añadimos, wlan0 aunque puede ser otra interface
+   #+begin_src shell
    interface wlan0
    static ip_address=192.168.4.1/24
    nohook wpa_supplicant
    #+end_src
+reiniciar el servicio dhcp y cargar la config de wlan0
 
-3. Configurar el punto de acceso desde el fichero =/etc/hostapd/hostapd.conf=.
-   #+begin_src conf
+3. Configurar el servidor DHCP (dnsmasq) editar el archivo /etc/dnsmasq.conf y
+   añadir lo siguiente
+   #+begin_src shell
+   interface=wlan0
+   dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h
+   #+end_src
+
+y recargamos dnsmasq ~sudo systemctl reload dnsmasq~
+
+4. Configurar el software de punto de acceso (hostapd) ~sudo nano
+   /etc/hostapd/hostapd.conf~
+   
+   y añadir lo siguiente, ciertos parametro se pueden o deben cambiar. Y el
+   nombre de la red y la contraseña no deben ser envueltas entre comillas.
+   #+begin_src shell
    interface=wlan0
    driver=nl80211
    ssid=NameOfNetwork
@@ -39,50 +63,14 @@ limitaciones.
    wpa_pairwise=TKIP
    rsn_pairwise=CCMP
    #+end_src
-   
-   editamos el archivo del sistema =/etc/default/hostapd= que indica donde se
-   encuentra esta información y modificamos la linea #DAEMON_CONF
-   #+begin_src conf
-   DAEMON_CONF="/etc/hostapd/hostapd.conf"
-   #+end_src
 
-4. Y activamos hostapd
-   #+begin_src shell
-   sudo systemctl unmask hostapd
-   sudo systemctl enable hostapd
-   sudo systemctl start hostapd
-   #+end_src
-
-** Instalar y configurar servicio DHCP
-1. Instalar un paquete para crear un servicio DHCP
-   #+begin_src shell 
-   sudo apt install isc-dhcp-server
-   #+end_src
-2. Configurar la interfaz que se usara para dar direcciones ip en el fichero
-   #+begin_src conf
-   INTERFACESv4="wlan0"
-   #+end_src
-3. Configurar el pool con las direcciones a servir en el fichero
-   =/etc/default/isc-dhcp-server=.
-   #+begin_src conf
-   subnet 192.168.4.0 netmask 255.255.255.0 {
-     range 192.168.4.2 192.168.4.10;
-     default-lease-time 600;
-     max-lease-time 7200;
-   }
-   #+end_src
-4. Registrar el servicio en el =crontab= de =root=.
-   #+begin_src shell
-   sudo crontab -u root -e
-   #+end_src
-   Esperar un tiempo para la interfaz wifi tenga una dirección ip.
-   #+begin_src conf
-   @reboot sleep 5 && service isc-dhcp-server start
-   #+end_src
-
-** Iniciar el servicio web
-Como con el servicio DHCP, este tambien se puede iniciar usando la =crontab= de
-=root=.
-#+begin_src conf
-@reboot sleep 5 && npm --prefix /home/pi/develop/raspi_coche_webserver/ run start
+editamos el archivo del sistema que indica donde se encuentra esta información
+~sudo nano /etc/default/hostapd~ Y la linea #DAEMON_CONF la reemplazamos con
+esto ~DAEMON_CONF="/etc/hostapd/hostapd.conf"~ y activamos hostapd
+#+begin_src shell
+sudo systemctl unmask hostapd
+sudo systemctl enable hostapd
+sudo systemctl start hostapd
 #+end_src
+
+[[https://www.raspberrypi.org/documentation/configuration/wireless/access-point.md][access-point raspberry]]
