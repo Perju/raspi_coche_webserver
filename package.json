@@ -10,7 +10,7 @@
     "raspi": "^6.0.1",
     "raspi-gpio": "^6.2.2",
     "raspi-pwm": "^6.0.0",
-    "socket.io": "^3.1.1"
+    "socket.io": "^4.7.5"
   },
   "devDependencies": {},
   "scripts": {
